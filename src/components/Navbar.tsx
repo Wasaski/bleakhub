@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 interface User {
   userId: string
   username: string
+  role?: string
 }
 
 export function Navbar() {
@@ -48,6 +49,14 @@ export function Navbar() {
               >
                 painel
               </Link>
+              {user.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className={`transition-colors hover:text-white ${pathname === "/admin" ? "text-white" : "text-[var(--accent)]"}`}
+                >
+                  admin
+                </Link>
+              )}
               <Link
                 href={`/profile/${user.userId}`}
                 className={`transition-colors hover:text-white ${pathname?.startsWith("/profile") ? "text-white" : "text-[var(--text-secondary)]"}`}

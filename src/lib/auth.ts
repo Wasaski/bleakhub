@@ -6,6 +6,7 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'bleakhub-fall
 export interface TokenPayload {
   userId: string
   username: string
+  role?: string
 }
 
 export async function signToken(payload: TokenPayload): Promise<string> {

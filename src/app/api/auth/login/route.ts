@@ -20,12 +20,16 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
+    if (user.banned) {
+      return Response.json({ error: "This account has been banned" }, { status: 403 })
+    }
+
     const valid = await bcrypt.compare(password, user.passwordHash)
     if (!valid) {
       return Response.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    const token = await signToken({ userId: user.id, username: user.username })
+    const token = await signToken({ userId: user.id, username: user.username, role: user.role })
 
     const cookieStore = await cookies()
     cookieStore.set("bleakhub_token", token, {
@@ -36,7 +40,7 @@ export async function POST(req: NextRequest) {
       path: "/",
     })
 
-    return Response.json({ user: { id: user.id, username: user.username } })
+    return Response.json({ user: { id: user.id, username: user.username, role: user.role } })
   } catch (error) {
     console.error("Login error:", error)
     return Response.json({ error: "Internal server error" }, { status: 500 })
