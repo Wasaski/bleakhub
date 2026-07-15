@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card: #141414;
+  --bg-hover: #1a1a1a;
+  --border: #1e1e1e;
+  --border-light: #2a2a2a;
+  --text-primary: #c8c8c8;
+  --text-secondary: #6b6b6b;
+  --text-muted: #3d3d3d;
+  --accent: #8b0000;
+  --accent-dim: #5c0000;
+  --danger: #6b0000;
+  --countdown: #4a0000;
+  --glow: rgba(139, 0, 0, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e1e1e #0a0a0a;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: #fff;
+}
+
+@keyframes decay {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.95); filter: blur(2px); }
+}
+
+@keyframes pulse-dark {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-pulse-dark {
+  animation: pulse-dark 3s ease-in-out infinite;
+}
+
+.animate-flicker {
+  animation: flicker 4s ease-in-out infinite;
+}
+
+.countdown-glow {
+  text-shadow: 0 0 10px var(--glow), 0 0 20px var(--glow);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+}
+
+.card-hover:hover {
+  border-color: var(--border-light);
+  background: var(--bg-hover);
+}
+
+input, textarea, select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #6b6b6b 0%, #3d3d3d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+  z-index: 50;
+}
