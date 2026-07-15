@@ -5,51 +5,60 @@ import { signToken, generateRecoveryCodes } from "@/lib/auth"
 import { cookies } from "next/headers"
 
 export async function POST(req: NextRequest) {
-  const { username, password } = await req.json()
+  try {
+    const { username, password } = await req.json()
 
-  if (!username || !password) {
-    return Response.json({ error: "Username and password required" }, { status: 400 })
-  }
+    if (!username || !password) {
+      return Response.json({ error: "Username and password required" }, { status: 400 })
+    }
 
-  if (username.length < 3 || username.length > 20) {
-    return Response.json({ error: "Username must be 3-20 characters" }, { status: 400 })
-  }
+    if (username.length < 3 || username.length > 20) {
+      return Response.json({ error: "Username must be 3-20 characters" }, { status: 400 })
+    }
 
-  if (password.length < 6) {
-    return Response.json({ error: "Password must be at least 6 characters" }, { status: 400 })
-  }
+    if (password.length < 6) {
+      return Response.json({ error: "Password must be at least 6 characters" }, { status: 400 })
+    }
 
-  const existing = await prisma.user.findUnique({ where: { username: username.toLowerCase() } })
-  if (existing) {
-    return Response.json({ error: "Username already taken" }, { status: 409 })
-  }
+    if (!/^[a-z0-9_]+$/.test(username.toLowerCase())) {
+      return Response.json({ error: "Username can only contain lowercase letters, numbers and underscores" }, { status: 400 })
+    }
 
-  const passwordHash = await bcrypt.hash(password, 12)
-  const recoveryCodes = generateRecoveryCodes()
+    const existing = await prisma.user.findUnique({ where: { username: username.toLowerCase() } })
+    if (existing) {
+      return Response.json({ error: "Username already taken" }, { status: 409 })
+    }
 
-  const user = await prisma.user.create({
-    data: {
-      username: username.toLowerCase(),
-      passwordHash,
-      recoveryCodes: {
-        create: recoveryCodes.map(code => ({ code })),
+    const passwordHash = await bcrypt.hash(password, 12)
+    const recoveryCodes = generateRecoveryCodes()
+
+    const user = await prisma.user.create({
+      data: {
+        username: username.toLowerCase(),
+        passwordHash,
+        recoveryCodes: {
+          create: recoveryCodes.map(code => ({ code })),
+        },
       },
-    },
-  })
+    })
 
-  const token = await signToken({ userId: user.id, username: user.username })
+    const token = await signToken({ userId: user.id, username: user.username })
 
-  const cookieStore = await cookies()
-  cookieStore.set("bleakhub_token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  })
+    const cookieStore = await cookies()
+    cookieStore.set("bleakhub_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    })
 
-  return Response.json({
-    user: { id: user.id, username: user.username },
-    recoveryCodes,
-  })
+    return Response.json({
+      user: { id: user.id, username: user.username },
+      recoveryCodes,
+    })
+  } catch (error) {
+    console.error("Register error:", error)
+    return Response.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
