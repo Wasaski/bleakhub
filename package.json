@@ -13,6 +13,7 @@
     "@opennextjs/cloudflare": "^1.20.1",
     "@prisma/adapter-neon": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@tailwindcss/postcss": "^4.3.2",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.3",
     "nanoid": "^3.3.16",
@@ -23,7 +24,6 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
